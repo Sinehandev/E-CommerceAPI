@@ -1,1 +1,5 @@
 public/* linguist-vendored
+
+# Hide the large JS file from GitHub language statistics (Linguist)
+# Mark app.js as vendored/generated so it won't count toward repo language breakdown
+/app.js linguist-vendored=true linguist-generated=true
