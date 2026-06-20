@@ -17,10 +17,524 @@ String.prototype.replaceAll = function (replaceThis, withThis) { var re = new Re
     });
 }
 $(document).ready(function () {
-    $('h4.panel-title').each(function () {
-        var html = $(this).html();
-        if (html && html.indexOf('http://localhost:5000') > -1) {
-            $(this).html(html.replace(/http:\/\/localhost:5000/g, window.location.origin));
+    var details = {
+      "collapse-Auth-Logoutuser": {
+        desc: "Clears the active user session cookie to log the user out.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: { "msg": "user logged out!" }
+      },
+      "collapse-Auth-LoginUser": {
+        desc: "Authenticates an existing user and returns their user profile in the response payload. Sets an HTTP-only cookie 'token' containing the JWT.",
+        access: "Public",
+        accessClass: "label-success",
+        reqBody: {
+          "email": "user@example.com",
+          "password": "Password123!"
+        },
+        resSuccess: {
+          "user": {
+            "name": "Jane Doe",
+            "email": "user@example.com",
+            "role": "user"
+          }
         }
+      },
+      "collapse-Auth-RegisterUser": {
+        desc: "Registers a new user inside the e-commerce system. The first registered user is automatically assigned the 'admin' role; subsequent users receive the 'user' role.",
+        access: "Public",
+        accessClass: "label-success",
+        reqBody: {
+          "name": "Jane Doe",
+          "email": "user@example.com",
+          "password": "Password123!"
+        },
+        resSuccess: {
+          "user": {
+            "name": "Jane Doe",
+            "email": "user@example.com",
+            "role": "user"
+          }
+        }
+      },
+      "collapse-User-getAllUser": {
+        desc: "Retrieves a listing of all users registered in the database.",
+        access: "Private (Admin Only)",
+        accessClass: "label-danger",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "users": [
+            {
+              "_id": "60d21b4667d0d8992e610c85",
+              "name": "Admin User",
+              "email": "admin@example.com",
+              "role": "admin"
+            },
+            {
+              "_id": "60d21b4667d0d8992e610c86",
+              "name": "Jane Doe",
+              "email": "user@example.com",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "collapse-User-showCurrentUserr": {
+        desc: "Retrieves the identity details of the currently logged-in user from the JWT token.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "user": {
+            "name": "Jane Doe",
+            "userId": "60d21b4667d0d8992e610c86",
+            "role": "user"
+          }
+        }
+      },
+      "collapse-User-updateUser": {
+        desc: "Updates the profile details (name and email) of the logged-in user.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "name": "Jane Smith",
+          "email": "janesmith@example.com"
+        },
+        resSuccess: {
+          "user": {
+            "name": "Jane Smith",
+            "email": "janesmith@example.com",
+            "role": "user"
+          }
+        }
+      },
+      "collapse-User-updateUserPassword": {
+        desc: "Updates the logged-in user's password securely by verifying their old password.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "oldPassword": "Password123!",
+          "newPassword": "NewPassword456!"
+        },
+        resSuccess: {
+          "msg": "Success! Password Updated."
+        }
+      },
+      "collapse-User-getsingleUser": {
+        desc: "Retrieves a user's details by their database identifier.",
+        access: "Private (Admin or Owner)",
+        accessClass: "label-danger",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "user": {
+            "_id": "60d21b4667d0d8992e610c86",
+            "name": "Jane Doe",
+            "email": "user@example.com",
+            "role": "user"
+          }
+        }
+      },
+      "collapse-Products-getAllProducts": {
+        desc: "Retrieves a list of all products in the e-commerce store.",
+        access: "Public",
+        accessClass: "label-success",
+        resSuccess: {
+          "product": [
+            {
+              "_id": "60d21b4667d0d8992e610c87",
+              "name": "Oppo Enco Buds 3 Pro",
+              "price": 4999,
+              "description": "High quality sound with active noise cancellation",
+              "image": "/uploads/oppoencobuds3pro.jpeg",
+              "category": "earbuds",
+              "company": "oppo",
+              "colors": ["#000000", "#ffffff"],
+              "inventory": 20,
+              "averageRating": 5,
+              "numOfReview": 1
+            }
+          ],
+          "Count": 1
+        }
+      },
+      "collapse-Products-createProducts": {
+        desc: "Creates a new product listing in the e-commerce store.",
+        access: "Private (Admin Only)",
+        accessClass: "label-danger",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "name": "Oppo Enco Buds 3 Pro",
+          "price": 4999,
+          "description": "High quality sound with active noise cancellation",
+          "category": "earbuds",
+          "company": "oppo",
+          "colors": ["#000000", "#ffffff"],
+          "inventory": 20
+        },
+        resSuccess: {
+          "product": {
+            "_id": "60d21b4667d0d8992e610c87",
+            "name": "Oppo Enco Buds 3 Pro",
+            "price": 4999,
+            "description": "High quality sound with active noise cancellation",
+            "image": "/uploads/oppoencobuds3pro.jpeg",
+            "category": "earbuds",
+            "company": "oppo",
+            "colors": ["#000000", "#ffffff"],
+            "inventory": 20,
+            "user": "60d21b4667d0d8992e610c85"
+          }
+        }
+      },
+      "collapse-Products-getSingleProducts": {
+        desc: "Retrieves details of a single product by its database ID, including its associated reviews using virtual population.",
+        access: "Public",
+        accessClass: "label-success",
+        resSuccess: {
+          "product": {
+            "_id": "60d21b4667d0d8992e610c87",
+            "name": "Oppo Enco Buds 3 Pro",
+            "price": 4999,
+            "description": "High quality sound with active noise cancellation",
+            "image": "/uploads/oppoencobuds3pro.jpeg",
+            "category": "earbuds",
+            "company": "oppo",
+            "colors": ["#000000", "#ffffff"],
+            "inventory": 20,
+            "reviews": [
+              {
+                "_id": "60d21b4667d0d8992e610c88",
+                "rating": 5,
+                "comment": "Superb sound quality",
+                "user": "60d21b4667d0d8992e610c86",
+                "product": "60d21b4667d0d8992e610c87"
+              }
+            ]
+          }
+        }
+      },
+      "collapse-Products-deleteproducts": {
+        desc: "Deletes a product by ID. Also automatically cascadingly deletes all reviews associated with this product.",
+        access: "Private (Admin Only)",
+        accessClass: "label-danger",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: "delete successfully!"
+      },
+      "collapse-Products-updateproducts": {
+        desc: "Updates the details of an existing product.",
+        access: "Private (Admin Only)",
+        accessClass: "label-danger",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "price": 4499,
+          "inventory": 15
+        },
+        resSuccess: {
+          "product": {
+            "_id": "60d21b4667d0d8992e610c87",
+            "name": "Oppo Enco Buds 3 Pro",
+            "price": 4499,
+            "inventory": 15,
+            "category": "earbuds",
+            "company": "oppo"
+          }
+        }
+      },
+      "collapse-Products-imageUpload": {
+        desc: "Uploads an image file to serve as a product thumbnail.",
+        access: "Private (Admin Only)",
+        accessClass: "label-danger",
+        headers: {
+          "Cookie": "token=<jwt_token>",
+          "Content-Type": "multipart/form-data"
+        },
+        reqBody: "File upload: Key = 'image' (value is local image file)",
+        resSuccess: {
+          "image": "/uploads/oppoencobuds3pro.jpeg"
+        }
+      },
+      "collapse-Review-getAllReview": {
+        desc: "Retrieves a listing of all product reviews.",
+        access: "Public",
+        accessClass: "label-success",
+        resSuccess: {
+          "reviews": [
+            {
+              "_id": "60d21b4667d0d8992e610c88",
+              "rating": 5,
+              "comment": "Superb sound quality",
+              "user": "60d21b4667d0d8992e610c86",
+              "product": "60d21b4667d0d8992e610c87"
+            }
+          ],
+          "count": 1
+        }
+      },
+      "collapse-Review-getSingleReview": {
+        desc: "Retrieves a specific review by its database ID.",
+        access: "Public",
+        accessClass: "label-success",
+        resSuccess: {
+          "review": {
+            "_id": "60d21b4667d0d8992e610c88",
+            "rating": 5,
+            "comment": "Superb sound quality",
+            "user": "60d21b4667d0d8992e610c86",
+            "product": "60d21b4667d0d8992e610c87"
+          }
+        }
+      },
+      "collapse-Review-createReview": {
+        desc: "Creates a product review. A user can submit only one review per product; subsequent submissions will return a validation error.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "rating": 5,
+          "comment": "Superb sound quality",
+          "product": "60d21b4667d0d8992e610c87"
+        },
+        resSuccess: {
+          "review": {
+            "_id": "60d21b4667d0d8992e610c88",
+            "rating": 5,
+            "comment": "Superb sound quality",
+            "user": "60d21b4667d0d8992e610c86",
+            "product": "60d21b4667d0d8992e610c87"
+          }
+        }
+      },
+      "collapse-Review-updateReviews": {
+        desc: "Updates the rating and comment of a review. Only the owner of the review can perform this action.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "rating": 4,
+          "comment": "Excellent, but battery could be slightly better."
+        },
+        resSuccess: {
+          "review": {
+            "_id": "60d21b4667d0d8992e610c88",
+            "rating": 4,
+            "comment": "Excellent, but battery could be slightly better.",
+            "user": "60d21b4667d0d8992e610c86",
+            "product": "60d21b4667d0d8992e610c87"
+          }
+        }
+      },
+      "collapse-Review-deleteReview": {
+        desc: "Deletes a review by its ID. Can only be performed by the review owner or an admin.",
+        access: "Private (User/Admin)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "msg": "Success! Review Deleted."
+        }
+      },
+      "collapse-Order-getAllorders": {
+        desc: "Retrieves a listing of all orders placed in the system.",
+        access: "Private (Admin Only)",
+        accessClass: "label-danger",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "order": [
+            {
+              "_id": "60d21b4667d0d8992e610c89",
+              "tax": 300,
+              "shippingFee": 150,
+              "subtotal": 9998,
+              "total": 10448,
+              "orderItems": [
+                {
+                  "amount": 2,
+                  "name": "Oppo Enco Buds 3 Pro",
+                  "price": 4999,
+                  "image": "/uploads/oppoencobuds3pro.jpeg",
+                  "product": "60d21b4667d0d8992e610c87"
+                }
+              ],
+              "status": "pending",
+              "user": "60d21b4667d0d8992e610c86",
+              "clientSecret": "jhdshkhsvkdshjsvbhd"
+            }
+          ],
+          "count": 1
+        }
+      },
+      "collapse-Order-postOrders": {
+        desc: "Initiates a checkout order for items in the cart and returns a simulated Stripe payment client secret.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "cartItems": [
+            {
+              "product": "60d21b4667d0d8992e610c87",
+              "amount": 2
+            }
+          ],
+          "tax": 300,
+          "shippingFee": 150
+        },
+        resSuccess: {
+          "order": {
+            "_id": "60d21b4667d0d8992e610c89",
+            "tax": 300,
+            "shippingFee": 150,
+            "subtotal": 9998,
+            "total": 10448,
+            "status": "pending",
+            "clientSecret": "jhdshkhsvkdshjsvbhd"
+          },
+          "clientSecret": "jhdshkhsvkdshjsvbhd"
+        }
+      },
+      "collapse-Order-getSingleOrder": {
+        desc: "Retrieves a specific order's details by database ID. Only accessible by the user who placed it or an admin.",
+        access: "Private (User/Admin)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "order": {
+            "_id": "60d21b4667d0d8992e610c89",
+            "tax": 300,
+            "shippingFee": 150,
+            "subtotal": 9998,
+            "total": 10448,
+            "orderItems": [
+              {
+                "amount": 2,
+                "name": "Oppo Enco Buds 3 Pro",
+                "price": 4999,
+                "image": "/uploads/oppoencobuds3pro.jpeg",
+                "product": "60d21b4667d0d8992e610c87"
+              }
+            ],
+            "status": "pending",
+            "user": "60d21b4667d0d8992e610c86"
+          }
+        }
+      },
+      "collapse-Order-updateOders": {
+        desc: "Updates the payment status of an order to 'paid' after successful checkout validation.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        reqBody: {
+          "paymentIntentId": "pi_123456789"
+        },
+        resSuccess: {
+          "order": {
+            "_id": "60d21b4667d0d8992e610c89",
+            "tax": 300,
+            "shippingFee": 150,
+            "subtotal": 9998,
+            "total": 10448,
+            "status": "paid",
+            "paymentIntentId": "pi_123456789",
+            "user": "60d21b4667d0d8992e610c86"
+          }
+        }
+      },
+      "collapse-Order-deleteOrder": {
+        desc: "Cancels or removes an order by database ID. Only accessible by the owner or an admin.",
+        access: "Private (User/Admin)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "msg": "Order removed"
+        }
+      },
+      "collapse-Order-showAllMyOrders": {
+        desc: "Retrieves a listing of all orders placed by the currently logged-in user.",
+        access: "Private (User)",
+        accessClass: "label-warning",
+        headers: { "Cookie": "token=<jwt_token>" },
+        resSuccess: {
+          "order": [
+            {
+              "_id": "60d21b4667d0d8992e610c89",
+              "tax": 300,
+              "shippingFee": 150,
+              "subtotal": 9998,
+              "total": 10448,
+              "status": "pending"
+            }
+          ],
+          "count": 1
+        }
+      }
+    };
+
+    function getPanelHTML(id, data) {
+      var html = '<div style="padding: 15px; background: #fafafa; border-radius: 4px; border: 1px solid #e3e3e3; margin-bottom: 10px;">';
+      
+      // Description
+      html += '<p style="font-size: 14px; color: #333; margin-bottom: 15px;"><strong>Description:</strong> ' + data.desc + '</p>';
+      
+      // Access Level
+      html += '<p style="margin-bottom: 15px;"><strong>Access Level:</strong> <span class="label ' + data.accessClass + '" style="font-size: 12px; padding: .2em .6em .3em;">' + data.access + '</span></p>';
+      
+      // Headers
+      var headers = data.headers || { "Content-Type": "application/json" };
+      html += '<div style="margin-top: 15px; margin-bottom: 15px;">';
+      html += '<h5><strong>Required Headers:</strong></h5>';
+      html += '<table class="table table-bordered table-striped" style="margin-bottom: 0; background: #fff;">';
+      html += '<thead><tr><th style="width: 40%;">Header Key</th><th>Value / Description</th></tr></thead>';
+      html += '<tbody>';
+      for (var key in headers) {
+        html += '<tr><td><code>' + key + '</code></td><td><code>' + headers[key] + '</code></td></tr>';
+      }
+      html += '</tbody></table></div>';
+      
+      // Request Body
+      if (data.reqBody) {
+        html += '<div style="margin-top: 15px; margin-bottom: 15px;">';
+        html += '<h5><strong>Request Payload Example:</strong></h5>';
+        if (typeof data.reqBody === 'string') {
+          html += '<pre style="background: #1e1e1e; border: none; padding: 10px; border-radius: 4px; color: #d4d4d4;">' + data.reqBody + '</pre>';
+        } else {
+          var prettyReq = JSON.stringify(data.reqBody, undefined, 4);
+          html += '<pre style="background: #1e1e1e; border: none; padding: 10px; border-radius: 4px;">' + syntaxHighlight(prettyReq) + '</pre>';
+        }
+        html += '</div>';
+      }
+      
+      // Success Response
+      if (data.resSuccess) {
+        html += '<div style="margin-top: 15px;">';
+        html += '<h5><strong>Example Success Response:</strong></h5>';
+        if (typeof data.resSuccess === 'string') {
+          html += '<pre style="background: #1e1e1e; border: none; padding: 10px; border-radius: 4px; color: #16a085; font-weight: bold;">' + data.resSuccess + '</pre>';
+        } else {
+          var prettyRes = JSON.stringify(data.resSuccess, undefined, 4);
+          html += '<pre style="background: #1e1e1e; border: none; padding: 10px; border-radius: 4px;">' + syntaxHighlight(prettyRes) + '</pre>';
+        }
+        html += '</div>';
+      }
+      
+      html += '</div>';
+      return html;
+    }
+
+    $('h4.panel-title').each(function () {
+      var html = $(this).html();
+      if (html && html.indexOf('http://localhost:5000') > -1) {
+        $(this).html(html.replace(/http:\/\/localhost:5000/g, window.location.origin));
+      }
     });
+
+    for (var id in details) {
+      var panelCollapse = $('#' + id);
+      if (panelCollapse.length > 0) {
+        var panelBody = panelCollapse.find('.panel-body');
+        if (panelBody.length > 0 && panelBody.html().trim() === '') {
+          panelBody.html(getPanelHTML(id, details[id]));
+        }
+      }
+    }
 });
