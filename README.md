@@ -27,7 +27,7 @@ A full-featured e-commerce backend API built with Node.js, Express, and MongoDB.
 
 ## Installation
 \```bash
-git clone https://github.com/YOUR_USERNAME/e-commerce-api.git
+git clone https://github.com/Sinehandev/E-CommerceAPI.git
 cd e-commerce-api
 npm install
 \```
