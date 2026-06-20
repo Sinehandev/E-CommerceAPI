@@ -2,7 +2,7 @@
 
 🚀 **Live Demo:** [https://e-commerceapi-8q7r.onrender.com/](https://e-commerceapi-8q7r.onrender.com/)
 
-A full-featured e-commerce backend API built with Node.js, Express, and MongoDB. This API provides complete functionality for managing products, users, orders, and reviews with secure authentication and role-based authorization.
+A full-featured e-commerce backend API built with Node.js, Express, and MongoDB. This API provides complete functionality for managing products, users, orders, and reviews with secure authentication and role-based access control.
 
 ## ✨ Features
 - 🔐 JWT Authentication with HTTP-only cookies
@@ -301,23 +301,55 @@ To test the API, you can use:
 
 ## 🚢 Deployment
 
-### Deployed on Render
-This project is deployed on [Render](https://render.com/) at:
+### Deployed on Render ✅
+This project is successfully deployed on [Render](https://render.com/):
 - **Live URL:** [https://e-commerceapi-8q7r.onrender.com/](https://e-commerceapi-8q7r.onrender.com/)
 
-### Deploy to Heroku
-```bash
-heroku login
-heroku create your-app-name
-git push heroku main
-heroku config:set MONGO_URI=your_production_uri
-heroku config:set JWT_SECRET=your_production_secret
-```
+### Deploy Your Own to Render
 
-### Deploy to DigitalOcean
+1. **Create a Render Account**
+   - Sign up at [render.com](https://render.com/)
+   - Connect your GitHub account
+
+2. **Create a New Web Service**
+   - Click "New +" → "Web Service"
+   - Connect your GitHub repository
+   - Select the E-CommerceAPI repo
+
+3. **Configure the Service**
+   - **Name:** `e-commerceapi` (or your preferred name)
+   - **Environment:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+
+4. **Add Environment Variables**
+   - Go to "Environment" tab
+   - Add the following variables:
+     ```
+     PORT=5000
+     NODE_ENV=production
+     MONGO_URI=your_mongodb_connection_string
+     JWT_SECRET=your_secret_key
+     JWT_LIFETIME=7d
+     ```
+
+5. **Deploy**
+   - Click "Create Web Service"
+   - Render will automatically deploy your app
+   - Your API will be live at the provided URL
+
+### Alternative Deployment Options
+
+**Deploy to DigitalOcean:**
 ```bash
 # Follow DigitalOcean App Platform documentation
 # Set environment variables in the platform dashboard
+```
+
+**Deploy Locally with Docker:**
+```bash
+docker build -t e-commerce-api .
+docker run -p 5000:5000 e-commerce-api
 ```
 
 ## 🤝 Contributing
