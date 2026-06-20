@@ -1,6 +1,8 @@
 # 🛒 E-Commerce REST API
 
-A full-featured e-commerce backend API built with Node.js, Express, and MongoDB. This API provides complete functionality for managing products, users, orders, and reviews with secure authentication and role-based access control.
+🚀 **Live Demo:** [https://e-commerceapi-8q7r.onrender.com/](https://e-commerceapi-8q7r.onrender.com/)
+
+A full-featured e-commerce backend API built with Node.js, Express, and MongoDB. This API provides complete functionality for managing products, users, orders, and reviews with secure authentication and role-based authorization.
 
 ## ✨ Features
 - 🔐 JWT Authentication with HTTP-only cookies
@@ -298,6 +300,10 @@ To test the API, you can use:
 - **Thunder Client** - VS Code extension
 
 ## 🚢 Deployment
+
+### Deployed on Render
+This project is deployed on [Render](https://render.com/) at:
+- **Live URL:** [https://e-commerceapi-8q7r.onrender.com/](https://e-commerceapi-8q7r.onrender.com/)
 
 ### Deploy to Heroku
 ```bash
