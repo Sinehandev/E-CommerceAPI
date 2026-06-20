@@ -16,3 +16,11 @@ String.prototype.replaceAll = function (replaceThis, withThis) { var re = new Re
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
+$(document).ready(function () {
+    $('h4.panel-title').each(function () {
+        var html = $(this).html();
+        if (html && html.indexOf('http://localhost:5000') > -1) {
+            $(this).html(html.replace(/http:\/\/localhost:5000/g, window.location.origin));
+        }
+    });
+});
