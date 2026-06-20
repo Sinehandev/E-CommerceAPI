@@ -32,13 +32,16 @@ const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
 app.set('trust proxy',1);
-
+app.use(morgan('tiny'));
 app.use(rateLimiter({
     windowMs: 15 * 60 * 1000,
     max: 60,
     message: 'Too many requests from this IP, please try again later'
-}));     
-app.use(helmet());
+}));
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+}));
 app.use(xss());
 app.use(mongoSanitize());
 app.use(express.json());
